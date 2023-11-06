@@ -15,6 +15,7 @@ public class AccesoDOM {
      */
     public static void main(String[] args) {
         System.out.println("Creación del proyecto");
+        System.out.println("Prueba desde GitHub");
     }
     
 }
