@@ -4,6 +4,8 @@
  */
 package accesodom;
 
+import java.io.File;
+
 /**
  *
  * @author David
@@ -14,8 +16,12 @@ public class AccesoDOM {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Creación del proyecto");
-        System.out.println("Prueba desde GitHub");
+        DOM a = new DOM();
+        File f = new File("books.xml");//necesitamos Libros.xml en la ruta correcta
+
+        a.abriXMLaDOM(f);
+        a.recorreDOMyMuestra();
+        a.insertLibroEnDOM("Juan", "David", "Accion", 2.0, "1935", "aaaaaaa");
     }
     
 }
