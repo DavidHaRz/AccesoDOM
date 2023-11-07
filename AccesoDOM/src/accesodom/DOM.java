@@ -7,6 +7,12 @@ package accesodom;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -17,20 +23,21 @@ import org.w3c.dom.NodeList;
  * @author David
  */
 public class DOM {
+
     Document doc;
-    
+
     public int abriXMLaDOM(File f) {
         try {
             System.out.println("Abriendo el archivo XML file y generando el DOM");
-            
+
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            
+
             factory.setIgnoringComments(true);
             factory.setIgnoringElementContentWhitespace(true);
-            
+
             DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(f);
-            
+
             System.out.println("DOM creado con éxito.\n");
             return 0;
         } catch (Exception e) {
@@ -38,16 +45,16 @@ public class DOM {
             return -1;
         }
     }
-    
-    public void recorreDOMyMuestra(){
+
+    public void recorreDOMyMuestra() {
         int numeroLibro = 0;
         String[] datosLibro = new String[10];
         Node nodo = null;
         Node root = doc.getFirstChild();
         NodeList nodelist = root.getChildNodes();
-        for (int i = 0; i < nodelist.getLength(); i++){
+        for (int i = 0; i < nodelist.getLength(); i++) {
             nodo = nodelist.item(i);
-            if (nodo.getNodeType() == Node.ELEMENT_NODE){
+            if (nodo.getNodeType() == Node.ELEMENT_NODE) {
                 Node ntemp = null;
                 int contador = 1;
                 datosLibro[0] = nodo.getAttributes().item(0).getNodeValue();
@@ -60,46 +67,46 @@ public class DOM {
                     }
                 }
                 numeroLibro++;
-                System.out.println("Libro " + numeroLibro + " con id: " + datosLibro[0] + "\n\tAutor: " + datosLibro[1] + "\n\tTítulo: " + datosLibro[2] +
-                        "\n\tGénero: " + datosLibro[3] + "\n\tPrecio: " + datosLibro[4] + "\n\tFecha de publicación: " + datosLibro[5] +
-                        "\n\tDescripción: " + datosLibro[6] + "\n");
+                System.out.println("Libro " + numeroLibro + " con id: " + datosLibro[0] + "\n\tAutor: " + datosLibro[1] + "\n\tTítulo: " + datosLibro[2]
+                        + "\n\tGénero: " + datosLibro[3] + "\n\tPrecio: " + datosLibro[4] + "\n\tFecha de publicación: " + datosLibro[5]
+                        + "\n\tDescripción: " + datosLibro[6] + "\n");
             }
         }
     }
-    
-    public int insertLibroEnDOM(String autor, String titulo, String genero, Double precio, String fechap, String descripcion){
+
+    public int insertLibroEnDOM(String autor, String titulo, String genero, Double precio, String fechap, String descripcion) {
         try {
             System.out.println("Añadir libro al árbol DOM: " + titulo + ";" + autor + ";" + genero + ";" + precio + ";" + fechap + ";"
-             + descripcion + ";");
+                    + descripcion + ";");
             //Crea los nodos -> los añade al padre desde las hojas a la raíz
             //CREA TÍTULO con el texto en medio
-            
+
             Node nTitulo = doc.createElement("Titulo"); //Crea etiquetas <Titulo>...</Titulo>
             Node nTitulo_text = doc.createTextNode(titulo); //Crea el nodo texto para el Titulo
             nTitulo.appendChild(nTitulo_text); //Añade el titulo a las etiquetas <Titulo>titulo</Titulo>  
-            
+
             //CREA AUTOR
             //Otra manera de hacerlo
             //Node nAutor=doc.createElement("Autor").appendChild(doc.createTextNode(autor));
             Node nAutor = doc.createElement("Autor");
             Node nAutor_text = doc.createTextNode(autor);
             nAutor.appendChild(nAutor_text);
-            
+
             Node nGenero = doc.createElement("Genero");
             Node nGenero_text = doc.createTextNode(genero);
             nGenero.appendChild(nGenero_text);
-            
+
             Node nPrecio = doc.createElement("Precio");
             Node nPrecio_text = doc.createTextNode(Double.toString(precio)); //convierto el valor Double a String
             nPrecio.appendChild(nPrecio_text);
-            
+
             Node nDescripcion = doc.createElement("Descripcion");
             Node nDescripcion_text = doc.createTextNode(descripcion);
             nDescripcion.appendChild(nDescripcion_text);
-            
+
             //CREA LIBRO con atributo y nodos
             Node nLibro = doc.createElement("Libro");
-            ((Element)nLibro).setAttribute("publicado", fechap);
+            ((Element) nLibro).setAttribute("publicado", fechap);
             nLibro.appendChild(nAutor);
             nLibro.appendChild(nTitulo);
             nLibro.appendChild(nGenero);
@@ -107,14 +114,55 @@ public class DOM {
             nLibro.appendChild(nDescripcion);
 
             nLibro.appendChild(doc.createTextNode("\n")); //Para insertar saltos de línea
-            
+
             Node raiz = doc.getFirstChild(); //tb.doc.getChildNodes().item(0)
             raiz.appendChild(nLibro);
             System.out.println("Libro insertado en el DOM correctamente");
             return 0;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
             return -1;
         }
     }
+
+    public int borrarNodo(String tituloBorrar) {
+        System.out.println("Buscando el libro " + tituloBorrar + " para eliminar");
+        try {
+            Node raiz = doc.getDocumentElement();
+            NodeList nl1 = doc.getElementsByTagName("title");
+            Node n1 = null;
+            for (int i = 0; i < nl1.getLength(); i++) {
+                n1 = nl1.item(i);
+
+                if (n1.getNodeType() == Node.ELEMENT_NODE) {
+                    if (n1.getChildNodes().item(0).getNodeValue().equals(tituloBorrar)) {
+                        System.out.println("Borrando el libro: " + tituloBorrar);
+                        n1.getParentNode().getParentNode().removeChild(n1.getParentNode());
+                    }
+                }
+            }
+            return 0;
+        } catch (Exception IOException) {
+            System.out.println(IOException);
+            IOException.printStackTrace();
+            return -1;
+        }
+    }
+
+    void guardarDOMcomoArchivo(String nuevoArchivo) {
+        try {
+            Source src = new DOMSource(doc);
+            StreamResult rst = new StreamResult(new File(nuevoArchivo));
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            transformer.transform(src, (javax.xml.transform.Result) rst);
+            System.out.println("Archivo creado del DOM con éxito\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
