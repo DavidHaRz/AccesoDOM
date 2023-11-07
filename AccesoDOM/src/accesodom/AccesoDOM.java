@@ -17,13 +17,13 @@ public class AccesoDOM {
      */
     public static void main(String[] args) {
         DOM a = new DOM();
-        File f = new File("books.xml");//necesitamos books.xml en la ruta correcta
+        File f = new File("books.xml");// necesitamos books.xml en la ruta correcta
 
         a.abriXMLaDOM(f);
         a.recorreDOMyMuestra();
         a.insertLibroEnDOM("Juan", "David", "Accion", 2.0, "1935", "aaaaaaa");
         a.borrarNodo("Lover Birds");
-        a.guardarDOMcomoArchivo("nuevoArchivo.xml");
+        a.guardarDOMcomoArchivo("nuevoArchivo.xml");// nombre del nuevo archivo donde se guardara el nuevo libro
     }
     
 }

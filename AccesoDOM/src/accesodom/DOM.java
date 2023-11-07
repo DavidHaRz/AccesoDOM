@@ -26,6 +26,7 @@ public class DOM {
 
     Document doc;
 
+    // Metodo para abrir el DOM
     public int abriXMLaDOM(File f) {
         try {
             System.out.println("Abriendo el archivo XML file y generando el DOM");
@@ -46,6 +47,7 @@ public class DOM {
         }
     }
 
+    // Metodo que recorre el DOM
     public void recorreDOMyMuestra() {
         int numeroLibro = 0;
         String[] datosLibro = new String[10];
@@ -74,37 +76,39 @@ public class DOM {
         }
     }
 
+    // Metodo para insertar
     public int insertLibroEnDOM(String autor, String titulo, String genero, Double precio, String fechap, String descripcion) {
         try {
             System.out.println("Añadir libro al árbol DOM: " + titulo + ";" + autor + ";" + genero + ";" + precio + ";" + fechap + ";"
                     + descripcion + ";");
             //Crea los nodos -> los añade al padre desde las hojas a la raíz
-            //CREA TÍTULO con el texto en medio
+            
+            //CREAMOS AUTOR
+            Node nAutor = doc.createElement("Autor"); //Crea etiquetas <Autor>...</Autor>
+            Node nAutor_text = doc.createTextNode(autor); //Crea el nodo texto para el Autor
+            nAutor.appendChild(nAutor_text); //Añade el Autor a las etiquetas <Autor>autor</Autor> 
+            
+            //CREAMOS tITULO
+            Node nTitulo = doc.createElement("Titulo");
+            Node nTitulo_text = doc.createTextNode(titulo);
+            nTitulo.appendChild(nTitulo_text);            
 
-            Node nTitulo = doc.createElement("Titulo"); //Crea etiquetas <Titulo>...</Titulo>
-            Node nTitulo_text = doc.createTextNode(titulo); //Crea el nodo texto para el Titulo
-            nTitulo.appendChild(nTitulo_text); //Añade el titulo a las etiquetas <Titulo>titulo</Titulo>  
-
-            //CREA AUTOR
-            //Otra manera de hacerlo
-            //Node nAutor=doc.createElement("Autor").appendChild(doc.createTextNode(autor));
-            Node nAutor = doc.createElement("Autor");
-            Node nAutor_text = doc.createTextNode(autor);
-            nAutor.appendChild(nAutor_text);
-
+            //CREAMOS GENERO
             Node nGenero = doc.createElement("Genero");
             Node nGenero_text = doc.createTextNode(genero);
             nGenero.appendChild(nGenero_text);
 
+            //CREAMOS PRECIO
             Node nPrecio = doc.createElement("Precio");
-            Node nPrecio_text = doc.createTextNode(Double.toString(precio)); //convierto el valor Double a String
+            Node nPrecio_text = doc.createTextNode(Double.toString(precio)); //convierto el precio Double a String
             nPrecio.appendChild(nPrecio_text);
 
+            //CREAMOS DESCRIPCION
             Node nDescripcion = doc.createElement("Descripcion");
             Node nDescripcion_text = doc.createTextNode(descripcion);
             nDescripcion.appendChild(nDescripcion_text);
 
-            //CREA LIBRO con atributo y nodos
+            //CREA LIBRO con atributo y nodos AUTOR, TITULO, GENERO, PRECIO, DESCRIPCION
             Node nLibro = doc.createElement("Libro");
             ((Element) nLibro).setAttribute("publicado", fechap);
             nLibro.appendChild(nAutor);
@@ -125,6 +129,7 @@ public class DOM {
         }
     }
 
+    // Metodo para eliminar
     public int borrarNodo(String tituloBorrar) {
         System.out.println("Buscando el libro " + tituloBorrar + " para eliminar");
         try {
@@ -149,6 +154,7 @@ public class DOM {
         }
     }
 
+    // Metodo guardar en un archivo nuvo
     void guardarDOMcomoArchivo(String nuevoArchivo) {
         try {
             Source src = new DOMSource(doc);
