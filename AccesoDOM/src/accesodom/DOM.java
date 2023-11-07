@@ -5,6 +5,7 @@
 package accesodom;
 
 import java.io.File;
+import static java.lang.Integer.parseInt;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -78,9 +79,11 @@ public class DOM {
 
     // Metodo para insertar
     public int insertLibroEnDOM(String autor, String titulo, String genero, Double precio, String fechap, String descripcion) {
+        
+        String id = siguienteID(doc);
         try {
-            System.out.println("Añadir libro al árbol DOM: " + titulo + ";" + autor + ";" + genero + ";" + precio + ";" + fechap + ";"
-                    + descripcion + ";");
+            System.out.println("\nAñadir libro al árbol DOM: " + titulo + "; " + autor + "; " + genero + "; " + precio + "; " + fechap + "; "
+                    + descripcion + "; ");
             //Crea los nodos -> los añade al padre desde las hojas a la raíz
             
             //CREAMOS AUTOR
@@ -103,6 +106,11 @@ public class DOM {
             Node nPrecio_text = doc.createTextNode(Double.toString(precio)); //convierto el precio Double a String
             nPrecio.appendChild(nPrecio_text);
 
+            //CREAMOS FECHA_PUBLICACION
+            Node nFechaP = doc.createElement("Fecha_Publicación");
+            Node nFechaP_text = doc.createTextNode(fechap);
+            nFechaP.appendChild(nFechaP_text);
+            
             //CREAMOS DESCRIPCION
             Node nDescripcion = doc.createElement("Descripcion");
             Node nDescripcion_text = doc.createTextNode(descripcion);
@@ -110,18 +118,19 @@ public class DOM {
 
             //CREA LIBRO con atributo y nodos AUTOR, TITULO, GENERO, PRECIO, DESCRIPCION
             Node nLibro = doc.createElement("Libro");
-            ((Element) nLibro).setAttribute("publicado", fechap);
+            ((Element) nLibro).setAttribute("id", id);
             nLibro.appendChild(nAutor);
             nLibro.appendChild(nTitulo);
             nLibro.appendChild(nGenero);
             nLibro.appendChild(nPrecio);
+            nLibro.appendChild(nFechaP);
             nLibro.appendChild(nDescripcion);
 
             nLibro.appendChild(doc.createTextNode("\n")); //Para insertar saltos de línea
 
             Node raiz = doc.getFirstChild(); //tb.doc.getChildNodes().item(0)
             raiz.appendChild(nLibro);
-            System.out.println("Libro insertado en el DOM correctamente");
+            System.out.println("\tLibro insertado en el DOM correctamente");
             return 0;
         } catch (Exception e) {
             System.out.println(e);
@@ -129,9 +138,23 @@ public class DOM {
         }
     }
 
+    //Saca el ID del último libro
+    public String siguienteID(Document doc)
+    {
+        NodeList nl1 = doc.getElementsByTagName("book");
+        int posicion = nl1.getLength() -1;
+        Node nodo = nl1.item(posicion);
+        Element elemento = (Element) nodo;
+        String aux = elemento.getAttribute("id");
+        String id = aux.substring(2,aux.length());  //Separa los numeros del ID
+        int nodoid = parseInt(id) + 1;
+        id = "bk" + nodoid;
+        return id;
+    }
+    
     // Metodo para eliminar
     public int borrarNodo(String tituloBorrar) {
-        System.out.println("Buscando el libro " + tituloBorrar + " para eliminar");
+        System.out.println("\nBuscando el libro '" + tituloBorrar + "' para eliminar");
         try {
             Node raiz = doc.getDocumentElement();
             NodeList nl1 = doc.getElementsByTagName("title");
@@ -141,7 +164,7 @@ public class DOM {
 
                 if (n1.getNodeType() == Node.ELEMENT_NODE) {
                     if (n1.getChildNodes().item(0).getNodeValue().equals(tituloBorrar)) {
-                        System.out.println("Borrando el libro: " + tituloBorrar);
+                        System.out.println("\tBorrando el libro: '" + tituloBorrar + "'");
                         n1.getParentNode().getParentNode().removeChild(n1.getParentNode());
                     }
                 }
@@ -165,7 +188,7 @@ public class DOM {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             transformer.transform(src, (javax.xml.transform.Result) rst);
-            System.out.println("Archivo creado del DOM con éxito\n");
+            System.out.println("\nArchivo creado del DOM con éxito\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

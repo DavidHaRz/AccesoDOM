@@ -198,11 +198,12 @@
            
     </book>
     
-    <Libro publicado="1935">
+    <Libro id="bk113">
         <Autor>Juan</Autor>
         <Titulo>David</Titulo>
         <Genero>Accion</Genero>
         <Precio>2.0</Precio>
+        <Fecha_Publicación>1935</Fecha_Publicación>
         <Descripcion>aaaaaaa</Descripcion>
         
     </Libro>
